@@ -1,0 +1,50 @@
+{
+  "name": "@dota2vods/importers",
+  "version": "0.1.0",
+  "description": "Command to automatically import and update tournament data for the dota2vods/tournament-data project.",
+  "keywords": [
+    "dota",
+    "dota2",
+    "liquipedia",
+    "parser",
+    "importer"
+  ],
+  "author": {
+    "name": "Eric Enold",
+    "email": "zyberspace@ericenold.de"
+  },
+  "homepage": "https://github.com/dota2vods/importers",
+  "bugs": "https://github.com/dota2vods/importers/issues",
+  "license": "GPL-3.0-or-later",
+  "bin": {
+    "dota2vods-importers": "dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "COPYING"
+  ],
+  "scripts": {
+    "dota2vods-importers": "ts-node src/index.ts",
+    "lint": "esw . --color --ext .ts",
+    "lint-watch": "yarn run lint --clear --watch",
+    "build": "rm -R dist/ && tsc",
+    "prepublish": "yarn run build",
+    "publish": "yarn publish --access=public"
+  },
+  "dependencies": {
+    "commander": "^8.3.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.2",
+    "@types/node": "^16.11.7",
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "eslint": "^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-watch": "^8.0.0",
+    "ts-node": "^10.4.0",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.4"
+  }
+}
