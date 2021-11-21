@@ -28,7 +28,10 @@ class ImportCommand extends AbstractCommand {
   public async execute(options: OptionValues & ImportCommandOptions, tournamentUrl: string): Promise<void> {
     const importer = this.selectImporter(tournamentUrl, options);
 
-    const tournament = await importer.importTournament(tournamentUrl, (status) => console.log(status));
+    this.updateStatus(`Importing tournament ${tournamentUrl}...`);
+    const tournament = await importer.importTournament(tournamentUrl, this.updateStatus.bind(this));
+
+    // TODO: Send to yaml dumper
     console.log(tournament);
   }
 }

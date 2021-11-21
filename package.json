@@ -32,11 +32,16 @@
     "publish": "yarn publish --access=public"
   },
   "dependencies": {
-    "commander": "^8.3.0"
+    "commander": "^8.3.0",
+    "mkdirp": "^1.0.4",
+    "node-fetch": "^2.6.6",
+    "sleep-promise": "^9.1.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.2",
+    "@types/mkdirp": "^1.0.2",
     "@types/node": "^16.11.7",
+    "@types/node-fetch": "^2.5.12",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "eslint": "^8.2.0",

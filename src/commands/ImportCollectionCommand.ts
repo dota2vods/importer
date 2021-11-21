@@ -24,8 +24,27 @@ class ImportCollectionCommand extends AbstractCommand {
   public async execute(options: OptionValues & ImportCollectionCommandOptions, collectionUrl: string): Promise<void> {
     const importer = this.selectImporter(collectionUrl, options);
 
-    const tournamentList = await importer.importCollection(collectionUrl, (status) => console.log(status));
-    console.log(tournamentList);
+    this.updateStatus(`Loading tournament urls from url ${collectionUrl}...`);
+    const tournamentList = await importer.getTournamentUrlsInCollection(
+      collectionUrl,
+      this.updateStatus.bind(this),
+    );
+
+    this.updateStatus('Got tournament urls, importing each of them now...');
+    for (let i = 0; i <= tournamentList.length - 1; i++) {
+      const tournamentUrl = tournamentList[i];
+      this.updateStatus(`Importing tournament ${i + 1}/${tournamentList.length}... -> ${tournamentUrl}`);
+
+      // We are hitting an api with a rate limit, so we HAVE to wait for the request to succeed before performing the
+      // next one.
+      // eslint-disable-next-line no-await-in-loop
+      const tournament = await importer.importTournament(tournamentUrl, this.updateStatus.bind(this));
+
+      // TODO: Send to yaml dumper
+      console.log(tournament);
+    }
+
+    this.updateStatus('Done. Imported all tournaments in collection url.');
   }
 }
 

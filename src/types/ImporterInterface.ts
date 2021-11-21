@@ -7,16 +7,14 @@ export interface Tournament {
   [key: string]: any;
 }
 
-export interface TournamentList {
-  [name: string]: Tournament;
-}
+export type TournamentUrlList = string[];
 
 interface ImporterInterface extends Named {
   supports(url: string): boolean;
 
   importTournament(tournamentUrl: string, updateStatus: UpdateStatus): Promise<Tournament>;
 
-  importCollection(collectionUrl: string, updateStatus: UpdateStatus): Promise<TournamentList>;
+  getTournamentUrlsInCollection(collectionUrl: string, updateStatus: UpdateStatus): Promise<TournamentUrlList>;
 }
 
 export default ImporterInterface;

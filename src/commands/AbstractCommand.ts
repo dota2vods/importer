@@ -68,6 +68,10 @@ abstract class AbstractCommand extends AbstractNamed implements CommandInterface
 
     throw new ImportError(`Could not find an importer that supports "${url}".`);
   }
+
+  protected updateStatus(status: string) : void {
+    console.log(status);
+  }
 }
 
 export default AbstractCommand;

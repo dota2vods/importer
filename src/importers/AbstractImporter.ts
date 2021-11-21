@@ -1,5 +1,5 @@
 import AbstractNamed from '../common/AbstractNamed';
-import ImporterInterface, { UpdateStatus, Tournament, TournamentList } from '../types/ImporterInterface';
+import ImporterInterface, { UpdateStatus, Tournament, TournamentUrlList } from '../types/ImporterInterface';
 
 abstract class AbstractImporter extends AbstractNamed implements ImporterInterface {
   protected readonly nameSuffix = 'Importer';
@@ -12,7 +12,10 @@ abstract class AbstractImporter extends AbstractNamed implements ImporterInterfa
 
   public abstract importTournament(tournamentUrl: string, updateStatus: UpdateStatus): Promise<Tournament>;
 
-  public abstract importCollection(collectionUrl: string, updateStatus: UpdateStatus): Promise<TournamentList>;
+  public abstract getTournamentUrlsInCollection(
+    collectionUrl: string,
+    updateStatus: UpdateStatus,
+  ): Promise<TournamentUrlList>;
 }
 
 export default AbstractImporter;

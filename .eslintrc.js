@@ -17,6 +17,7 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    '@typescript-eslint/no-shadow': ['error'],
     'class-methods-use-this': 'off',
     'import/extensions': 'off',
     'import/no-extraneous-dependencies': ['error', {
@@ -25,7 +26,9 @@ module.exports = {
     'max-len': ['error', {
       code: 120,
     }],
+    'no-shadow': 'off',
     'no-continue': 'off',
+    'no-plusplus': 'off',
     'no-restricted-syntax': [
       'off',
       {
