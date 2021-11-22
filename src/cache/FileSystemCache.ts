@@ -19,10 +19,12 @@ class FileSystemCache implements CacheInterface {
     const filePath = this.getFilePathForKey(key);
 
     try {
-      const fileContents = await readFile(filePath);
-      const [keepUntilString, stringifiedContents] = fileContents.toString().split('|', 2);
+      const fileContents = (await readFile(filePath)).toString();
 
-      const keepUntil = parseInt(keepUntilString, 10);
+      const splitPosition = fileContents.indexOf('|');
+      const keepUntil = parseInt(fileContents.substring(0, splitPosition), 10);
+      const stringifiedContents = fileContents.substring(splitPosition + 1);
+
       if (keepUntil > 0 && Date.now() > keepUntil) {
         // Max cache time reached, ignore the cache file and return null
         // We don't need to delete the file as it will probably be re-written by the calling code in the next step
