@@ -7,7 +7,7 @@ interface CacheInterface {
    */
   set(key: string, value: unknown, ttl?: number): Promise<void>;
 
-  get(key: string): Promise<unknown|null>;
+  get(key: string): Promise<unknown | null>;
 }
 
 export default CacheInterface;

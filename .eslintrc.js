@@ -1,3 +1,5 @@
+const { join } = require('path');
+
 module.exports = {
   root: true,
   env: {
@@ -5,6 +7,7 @@ module.exports = {
   },
   extends: [
     'airbnb-base',
+    'airbnb-typescript/base',
     'plugin:import/typescript',
     'plugin:@typescript-eslint/recommended',
   ],
@@ -12,6 +15,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 13,
     sourceType: 'module',
+    project: join(__dirname, 'tsconfig.json'),
   },
   plugins: [
     '@typescript-eslint',

@@ -15,7 +15,7 @@ class FileSystemCache implements CacheInterface {
     return writeFile(filePath, `${keepUntil}|${JSON.stringify(value)}`);
   }
 
-  public async get(key: string): Promise<unknown|null> {
+  public async get(key: string): Promise<unknown | null> {
     const filePath = this.getFilePathForKey(key);
 
     try {

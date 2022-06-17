@@ -11,7 +11,7 @@ enum Action {
 
 interface QueryParameters {
   action: Action;
-  [key: string]: string|number;
+  [key: string]: string | number;
 }
 
 interface CategoryMember {
@@ -76,7 +76,7 @@ class LiquipediaApiClient {
     // Check if we have a cached item (the pages ina  category don't change that often and this is better for
     // development)
     const cacheKey = [this.urlPrefix, wiki, categoryTitle].join('|');
-    const cachedCategoryMembers = await this.cache.get(cacheKey) as CategoryMember[]|null;
+    const cachedCategoryMembers = await this.cache.get(cacheKey) as CategoryMember[] | null;
     if (cachedCategoryMembers !== null) {
       updateStatus('  Using cache.');
 
@@ -86,7 +86,7 @@ class LiquipediaApiClient {
     // Result not cached yet, or cache ttl reached, re-fetch category members
     const categoryMembers: CategoryMember[] = [];
     let page = 1;
-    let continueLink: null|string = null;
+    let continueLink: null | string = null;
     do {
       updateStatus(`  Loading page ${page}...`);
 

@@ -6,10 +6,10 @@ export default async <T>(folder: string, factoryArguments: Array<unknown> = []):
   const importTargets = await readdir(folder);
 
   // Import all first level folders or files
-  const importPromises: Array<Promise<CallableFunction|undefined>> = [];
+  const importPromises: Array<Promise<CallableFunction | undefined>> = [];
   for (const importerFolder of importTargets) {
     importPromises.push(
-      import(path.join(folder, importerFolder)).then(({ factory }: {factory?: CallableFunction}) => factory),
+      import(path.join(folder, importerFolder)).then(({ factory }: { factory?: CallableFunction }) => factory),
     );
   }
 

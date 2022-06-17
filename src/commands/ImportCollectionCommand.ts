@@ -4,7 +4,7 @@ import { Option } from '../types/CommandInterface';
 import ImporterInterface from '../types/ImporterInterface';
 import AbstractCommand, { ForceImporterOptions } from './AbstractCommand';
 
-type ImportCollectionCommandOptions = ForceImporterOptions
+type ImportCollectionCommandOptions = ForceImporterOptions;
 
 class ImportCollectionCommand extends AbstractCommand {
   public getDescription(): string {
