@@ -1,8 +1,8 @@
 import { OptionValues } from 'commander';
-import ImportError from '../ImportError';
-import AbstractNamed from '../common/AbstractNamed';
 import CommandInterface, { Option } from '../types/CommandInterface';
 import ImporterInterface from '../types/ImporterInterface';
+import AbstractNamed from '../common/AbstractNamed';
+import ImportError from '../ImportError';
 
 export interface ForceImporterOptions {
   importer?: string;
@@ -11,13 +11,7 @@ export interface ForceImporterOptions {
 abstract class AbstractCommand extends AbstractNamed implements CommandInterface {
   protected readonly nameSuffix = 'Command';
 
-  protected readonly importers: ImporterInterface[];
-
-  public constructor(importers: ImporterInterface[]) {
-    super();
-
-    this.importers = importers;
-  }
+  protected abstract readonly importers: ImporterInterface[];
 
   public abstract getDescription(): string;
 

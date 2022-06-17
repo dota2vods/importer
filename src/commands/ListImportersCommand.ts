@@ -1,8 +1,20 @@
-import CommandFactory from '../types/CommandFactory';
-import ImporterInterface from '../types/ImporterInterface';
+import { injectAll, registry, singleton } from 'tsyringe';
+import { CommandInterfaceToken } from '../types/CommandInterface';
+import ImporterInterface, { ImporterInterfaceToken } from '../types/ImporterInterface';
 import AbstractCommand from './AbstractCommand';
 
+@singleton()
+@registry([
+  { token: CommandInterfaceToken, useClass: ListImportersCommand },
+])
 class ListImportersCommand extends AbstractCommand {
+  public constructor(
+    @injectAll(ImporterInterfaceToken)
+    protected readonly importers: ImporterInterface[],
+  ) {
+    super();
+  }
+
   public getDescription(): string {
     return 'Lists all available importers.';
   }
@@ -13,5 +25,3 @@ class ListImportersCommand extends AbstractCommand {
 }
 
 export default ListImportersCommand;
-
-export const factory: CommandFactory = (importers: ImporterInterface[]) => new ListImportersCommand(importers);

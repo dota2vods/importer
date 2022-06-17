@@ -1,17 +1,20 @@
 #!/usr/bin/env node
 
-import path from 'path';
+import 'reflect-metadata';
+import { container } from 'tsyringe';
 import { Command as Program } from 'commander';
+import CommandInterface, { CommandInterfaceToken } from './types/CommandInterface';
+import DependencyInjectionAutoloader from './DependencyInjectionAutoloader';
 import ImportError from './ImportError';
-import importFactoriesFromFolder from './importFactoriesFromFolder';
-import CommandInterface from './types/CommandInterface';
-import ImporterInterface from './types/ImporterInterface';
 
 const argumentListToString = (argumentList: Array<string>) => argumentList.map(
   (argument) => `<${argument}>`,
 ).join(' ');
 
 (async () => {
+  // Load all definitions, so they are registered in the dependency injection
+  await (new DependencyInjectionAutoloader()).loadAllInFolder(__dirname, [__filename]);
+
   // Create base program
   const program = new Program();
   program
@@ -21,13 +24,8 @@ const argumentListToString = (argumentList: Array<string>) => argumentList.map(
       + ' project.')
   ;
 
-  // Load importers and command definitions
-  const importers = await importFactoriesFromFolder<ImporterInterface>(path.join(__dirname, 'importers'));
-  const commands = await importFactoriesFromFolder<CommandInterface>(path.join(__dirname, 'commands'), [
-    importers,
-  ]);
-
   // Register commands
+  const commands = container.resolveAll<CommandInterface>(CommandInterfaceToken);
   for (const command of commands) {
     const commandDefinition = program
       .command(`${command.getName()} ${argumentListToString(command.getArguments())}`.trim(), {

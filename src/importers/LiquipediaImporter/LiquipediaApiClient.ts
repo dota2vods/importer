@@ -1,9 +1,10 @@
-import realFetch, { Response } from 'node-fetch';
 import querystring from 'querystring';
+import { singleton } from 'tsyringe';
+import realFetch, { Response } from 'node-fetch';
 import sleep from 'sleep-promise';
-import ImportError from '../../ImportError';
-import CacheInterface from '../../cache/CacheInterface';
 import { UpdateStatus } from '../../types/ImporterInterface';
+import FileSystemCache from '../../cache/FileSystemCache';
+import ImportError from '../../ImportError';
 
 enum Action {
   query = 'query',
@@ -28,9 +29,8 @@ interface CategoryMembersResponse {
   };
 }
 
+@singleton()
 class LiquipediaApiClient {
-  private readonly cache: CacheInterface;
-
   protected readonly urlPrefix = 'https://liquipedia.net';
 
   private readonly userAgent = 'dota2vods.tv Importer (https://github.com/dota2vods/tournament-data;'
@@ -45,8 +45,9 @@ class LiquipediaApiClient {
 
   private lastRequest = 0;
 
-  public constructor(cache: CacheInterface) {
-    this.cache = cache;
+  public constructor(
+    private readonly cache: FileSystemCache,
+  ) {
   }
 
   public getWikiAndTitleFromUrl(url: string): [string, string] {

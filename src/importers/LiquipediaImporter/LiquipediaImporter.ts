@@ -1,20 +1,26 @@
+import { registry, singleton } from 'tsyringe';
 import sleep from 'sleep-promise';
-import FileSystemCache from '../../cache/FileSystemCache';
-import ImporterFactory from '../../types/ImporterFactory';
-import { Tournament, TournamentUrlList, UpdateStatus } from '../../types/ImporterInterface';
+import {
+  ImporterInterfaceToken,
+  Tournament,
+  TournamentUrlList,
+  UpdateStatus,
+} from '../../types/ImporterInterface';
+import ImportError from '../../ImportError';
 import AbstractImporter from '../AbstractImporter';
 import LiquipediaApiClient from './LiquipediaApiClient';
-import ImportError from '../../ImportError';
 
+@singleton()
+@registry([
+  { token: ImporterInterfaceToken, useClass: LiquipediaImporter },
+])
 class LiquipediaImporter extends AbstractImporter {
   protected readonly requiredUrlPrefix = 'https://liquipedia.net';
 
-  private readonly liquipediaApiClient: LiquipediaApiClient;
-
-  public constructor(client: LiquipediaApiClient) {
+  public constructor(
+    private readonly liquipediaApiClient: LiquipediaApiClient,
+  ) {
     super();
-
-    this.liquipediaApiClient = client;
   }
 
   public async importTournament(url: string): Promise<Tournament> {
@@ -46,7 +52,3 @@ class LiquipediaImporter extends AbstractImporter {
 }
 
 export default LiquipediaImporter;
-
-export const factory: ImporterFactory = () => new LiquipediaImporter(
-  new LiquipediaApiClient(new FileSystemCache()),
-);

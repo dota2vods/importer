@@ -1,12 +1,23 @@
+import { injectAll, registry, singleton } from 'tsyringe';
 import { OptionValues } from 'commander';
-import CommandFactory from '../types/CommandFactory';
-import { Option } from '../types/CommandInterface';
-import ImporterInterface from '../types/ImporterInterface';
+import { CommandInterfaceToken, Option } from '../types/CommandInterface';
+import ImporterInterface, { ImporterInterfaceToken } from '../types/ImporterInterface';
 import AbstractCommand, { ForceImporterOptions } from './AbstractCommand';
 
 type ImportCollectionCommandOptions = ForceImporterOptions;
 
+@singleton()
+@registry([
+  { token: CommandInterfaceToken, useClass: ImportCollectionCommand },
+])
 class ImportCollectionCommand extends AbstractCommand {
+  public constructor(
+    @injectAll(ImporterInterfaceToken)
+    protected readonly importers: ImporterInterface[],
+  ) {
+    super();
+  }
+
   public getDescription(): string {
     return 'Import or update all tournaments of a collection (mainly used for automation).';
   }
@@ -49,5 +60,3 @@ class ImportCollectionCommand extends AbstractCommand {
 }
 
 export default ImportCollectionCommand;
-
-export const factory: CommandFactory = (importers: ImporterInterface[]) => new ImportCollectionCommand(importers);

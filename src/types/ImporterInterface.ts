@@ -9,6 +9,8 @@ export interface Tournament {
 
 export type TournamentUrlList = string[];
 
+export const ImporterInterfaceToken = 'ImporterInterface';
+
 interface ImporterInterface extends Named {
   supports(url: string): boolean;
 
