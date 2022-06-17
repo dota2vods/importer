@@ -1,5 +1,5 @@
 import { registry, singleton } from 'tsyringe';
-import sleep from 'sleep-promise';
+import { parse } from 'node-html-parser';
 import {
   ImporterInterfaceToken,
   Tournament,
@@ -23,12 +23,49 @@ class LiquipediaImporter extends AbstractImporter {
     super();
   }
 
-  public async importTournament(url: string): Promise<Tournament> {
-    // Simulate api requests
-    await sleep(3000);
+  public async importTournament(tournamentUrl: string, updateStatus: UpdateStatus): Promise<Tournament> {
+    const [wiki, pageTitle] = this.liquipediaApiClient.getWikiAndTitleFromUrl(tournamentUrl);
+
+    const pageContent = await this.liquipediaApiClient.getParsedPageContent(wiki, pageTitle, updateStatus);
+    updateStatus('Page content loaded, parsing tournament...');
+
+    const root = parse(pageContent);
+
+    // TODO: Get meta data via query api and read the name plus all other meta data from there
+    // Read content
+    const name = root.querySelector('.infobox-header')?.lastChild.text;
+
+    // Find stage links and load them
+    const sectionHeaders = root.querySelectorAll('h2 > .mw-headline');
+    let stageLinks: string[] = [];
+    for (let i = 0; i <= sectionHeaders.length; i++) {
+      const sectionHeader = sectionHeaders[i];
+      if (sectionHeader.text === 'Results') {
+        let nextH2Found = false;
+        stageLinks = root.querySelectorAll(`h2:nth-of-type(${i + 1}) ~ h3, h2:nth-of-type(${i + 1}) ~ h2`)
+          .filter((section) => {
+            if (section.tagName === 'H2') {
+              nextH2Found = true;
+            }
+
+            return !nextH2Found;
+          })
+          .map((section) => {
+            const href = section.querySelector('a')?.attributes.href as string;
+
+            const query = new URLSearchParams(href.substring(href.indexOf('?') + 1));
+            return `${this.requiredUrlPrefix}/${wiki}/${query.get('title')}`;
+          })
+        ;
+        break;
+      }
+    }
+
+    // TODO: Load stages
 
     return {
-      url,
+      name,
+      stageLinks,
     };
   }
 

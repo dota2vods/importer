@@ -1,4 +1,3 @@
-import querystring from 'querystring';
 import { singleton } from 'tsyringe';
 import realFetch, { Response } from 'node-fetch';
 import sleep from 'sleep-promise';
@@ -8,11 +7,33 @@ import ImportError from '../../ImportError';
 
 enum Action {
   query = 'query',
+  parse = 'parse',
 }
 
-interface QueryParameters {
+interface QueryParameters extends Record<string, string> {
   action: Action;
-  [key: string]: string | number;
+}
+
+interface RevisionsResponse {
+  query: {
+    pages: {
+      [pageId: string]: {
+        revisions: {
+          revid: number;
+        }[];
+      };
+    };
+  };
+}
+
+interface ParsedPageResponse {
+  parse: {
+    title: string;
+    pageid: number;
+    text: {
+      '*': string;
+    };
+  };
 }
 
 interface CategoryMember {
@@ -23,7 +44,7 @@ interface CategoryMembersResponse {
   continue?: {
     cmcontinue: string;
     continue: string;
-  }
+  };
   query: {
     categorymembers: CategoryMember[];
   };
@@ -37,11 +58,16 @@ class LiquipediaApiClient {
     + ' importer@dota2vods.tv)';
 
   /**
-   * Liquipedia has rate limit for its api. It's currently at 1 request per 2 seconds, but we add some puffer.
+   * Defines the wait times for when hitting the Liquipedia api, so we don't hit the rate limit.
    *
    * @see https://liquipedia.net/api-terms-of-use
    */
-  private readonly minTimeBetweenRequests = 2500;
+  private readonly minTimeBetweenRequests = {
+    [Action.query]: 2500,
+    [Action.parse]: 35000,
+  };
+
+  private lastRequestAction: Action = Action.query;
 
   private lastRequest = 0;
 
@@ -69,6 +95,42 @@ class LiquipediaApiClient {
     return [wiki, title];
   }
 
+  public async getParsedPageContent(wiki: string, pageTitle: string, updateStatus: UpdateStatus): Promise<string> {
+    // Get the latest revision id. This way we can cache the page forever. Until it gets a new revision.
+    const revisionsResponse = await this.fetchFromWikiApi<RevisionsResponse>(wiki, {
+      action: Action.query,
+      format: 'json',
+      titles: pageTitle,
+      prop: 'revisions',
+      rvlimit: '1',
+      rvprop: 'ids',
+    });
+    const latestRevisionId = Object.values(revisionsResponse.query.pages)[0].revisions[0].revid;
+    updateStatus(`  Latest revision for ${pageTitle} is ${latestRevisionId}.`);
+
+    // Check if we have a cached item
+    const cacheKey = [this.urlPrefix, wiki, 'pageContent', latestRevisionId].join('|');
+    const cachedPageContent = await this.cache.get(cacheKey) as string | null;
+    if (cachedPageContent !== null) {
+      updateStatus('  Using cache.');
+
+      return cachedPageContent;
+    }
+
+    // Result not cached yet, or cache ttl reached, re-fetch page content
+    const { parse: { text: { '*': pageContent } } } = await this.fetchFromWikiApi<ParsedPageResponse>(wiki, {
+      action: Action.parse,
+      format: 'json',
+      oldid: latestRevisionId.toString(),
+      prop: 'text',
+    });
+
+    // Cache revision forever, it will not change
+    await this.cache.set(cacheKey, pageContent);
+
+    return pageContent;
+  }
+
   public async getCategoryMembers(
     wiki: string,
     categoryTitle: string,
@@ -76,7 +138,7 @@ class LiquipediaApiClient {
   ): Promise<CategoryMember[]> {
     // Check if we have a cached item (the pages ina  category don't change that often and this is better for
     // development)
-    const cacheKey = [this.urlPrefix, wiki, categoryTitle].join('|');
+    const cacheKey = [this.urlPrefix, wiki, 'categoryMembers', categoryTitle].join('|');
     const cachedCategoryMembers = await this.cache.get(cacheKey) as CategoryMember[] | null;
     if (cachedCategoryMembers !== null) {
       updateStatus('  Using cache.');
@@ -97,10 +159,10 @@ class LiquipediaApiClient {
         format: 'json',
         list: 'categorymembers',
         cmprop: 'title',
-        // 500 is the maximum. If we every parse categories with more that 500 tournaments, we need to
-        // account for that
-        cmlimit: 500,
         cmtitle: categoryTitle,
+        // 500 is the maximum. If we every parse categories with more than 500 tournaments, we need to
+        // account for that
+        cmlimit: '500',
       };
 
       // Add continue link if we have one
@@ -133,21 +195,28 @@ class LiquipediaApiClient {
   }
 
   private fetchFromWikiApi<T>(wiki: string, queryParameters: QueryParameters): Promise<T> {
-    return this.fetchJSON<T>(`${this.urlPrefix}/${wiki}/api.php?${querystring.stringify(queryParameters)}`);
+    return this.fetchJSON<T>(
+      `${this.urlPrefix}/${wiki}/api.php?${new URLSearchParams(queryParameters)}`,
+      queryParameters.action,
+    );
   }
 
-  private async fetchJSON<T>(url: string): Promise<T> {
-    return (await this.fetch(url)).json();
+  private async fetchJSON<T>(url: string, action: Action = Action.query): Promise<T> {
+    return (await this.fetch(url, action)).json();
   }
 
   /**
-   * Wrapper for fetch to follow the Liquipedia API Terms of Use. Returns the parsed json result.
+   * Wrapper for fetch to follow the Liquipedia API Terms of Use.
    *
    * @see https://liquipedia.net/api-terms-of-use
    */
-  private async fetch(url: string): Promise<Response> {
+  private async fetch(url: string, action: Action = Action.query): Promise<Response> {
+    // Use normal min time if the last request was using query as action, else use the current action
+    // (Parse action requires a longer wait between requests)
+    const actionToUseForMinTime = this.lastRequestAction === Action.query ? Action.query : action;
+
     // Liquipedia has a rate limit, make sure we don't hit it
-    const timeToWait = this.minTimeBetweenRequests - (Date.now() - this.lastRequest);
+    const timeToWait = this.minTimeBetweenRequests[actionToUseForMinTime] - (Date.now() - this.lastRequest);
     if (timeToWait > 0) {
       await sleep(timeToWait);
     }
@@ -160,7 +229,8 @@ class LiquipediaApiClient {
       },
     });
 
-    // Update last request time. We don't support parallel fetch calls
+    // Update last request time. We don't support parallel fetch calls.
+    this.lastRequestAction = action;
     this.lastRequest = Date.now();
 
     // Return the fetch response
