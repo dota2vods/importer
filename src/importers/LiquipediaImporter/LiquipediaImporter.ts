@@ -38,7 +38,7 @@ class LiquipediaImporter extends AbstractImporter {
     // Find stage links and load them
     const sectionHeaders = root.querySelectorAll('h2 > .mw-headline');
     let stageLinks: string[] = [];
-    for (let i = 0; i <= sectionHeaders.length; i++) {
+    for (let i = 0; i <= sectionHeaders.length - 1; i++) {
       const sectionHeader = sectionHeaders[i];
       if (sectionHeader.text === 'Results') {
         let nextH2Found = false;
@@ -83,7 +83,7 @@ class LiquipediaImporter extends AbstractImporter {
     const categoryMembers = await this.liquipediaApiClient.getCategoryMembers(wiki, categoryTitle, updateStatus);
 
     return categoryMembers.map(({ title: tournamentTitle }) => (
-      `${this.requiredUrlPrefix}/${wiki}/${tournamentTitle.replace(/[^\w/]+/g, '_')}`
+      `${this.requiredUrlPrefix}/${wiki}/${tournamentTitle.replace(/[^:\w/]+/g, '_')}`
     ));
   }
 }
