@@ -32,7 +32,7 @@
     "publish": "yarn publish --access=public"
   },
   "dependencies": {
-    "commander": "^8.3.0",
+    "commander": "^9.3.0",
     "mkdirp": "^1.0.4",
     "node-fetch": "^2.6.6",
     "sleep-promise": "^9.1.0"
