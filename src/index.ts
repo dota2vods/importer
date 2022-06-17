@@ -15,7 +15,7 @@ const argumentListToString = (argumentList: Array<string>) => argumentList.map(
   // Create base program
   const program = new Program();
   program
-    .name('dota2vods-importers')
+    .name('dota2vods-importer')
     .usage('[command] [argument]')
     .description('Command to automatically import and update tournament data for the dota2vods/tournament-data'
       + ' project.')

@@ -1,5 +1,5 @@
 {
-  "name": "@dota2vods/importers",
+  "name": "@dota2vods/importer",
   "version": "0.1.0",
   "description": "Command to automatically import and update tournament data for the dota2vods/tournament-data project.",
   "keywords": [
@@ -13,18 +13,18 @@
     "name": "Eric Enold",
     "email": "zyberspace@ericenold.de"
   },
-  "homepage": "https://github.com/dota2vods/importers",
-  "bugs": "https://github.com/dota2vods/importers/issues",
+  "homepage": "https://github.com/dota2vods/importer",
+  "bugs": "https://github.com/dota2vods/importer/issues",
   "license": "GPL-3.0-or-later",
   "bin": {
-    "dota2vods-importers": "dist/index.js"
+    "dota2vods-importer": "dist/index.js"
   },
   "files": [
     "dist/",
     "COPYING"
   ],
   "scripts": {
-    "dota2vods-importers": "ts-node src/index.ts",
+    "dota2vods-importer": "ts-node src/index.ts",
     "lint": "esw . --color --ext .ts",
     "lint-watch": "yarn run lint --clear --watch",
     "build": "rm -R dist/ && tsc",

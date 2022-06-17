@@ -1,5 +1,5 @@
-dota2vods/importers
-===================
+dota2vods/importer
+==================
 
 Command to automatically import and update tournament data for the [dota2vods/tournament-data](https://github.com/dota2vods/tournament-data)
 project.
@@ -18,9 +18,9 @@ Usage
 -----
 
 ```shell script
-$ yarn add @dota2vods/importers
-$ yarn run dota2vods-importers --help
-Usage: yarn run dota2vods-importers [command] [argument]
+$ yarn add @dota2vods/importer
+$ yarn run dota2vods-importer --help
+Usage: yarn run dota2vods-importer [command] [argument]
 
 Command to automatically import and update tournament data for the dota2vods/tournament-data project.
 
