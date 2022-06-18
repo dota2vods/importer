@@ -1,8 +1,8 @@
-import { singleton } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import realFetch, { Response } from 'node-fetch';
 import sleep from 'sleep-promise';
 import { UpdateStatus } from '../ImporterInterface';
-import FileSystemCache from '../../Cache/FileSystemCache';
+import CacheInterface, { CacheInterfaceToken } from '../../Cache/CacheInterface';
 import ImportError from '../../ImportError';
 
 enum Action {
@@ -75,7 +75,8 @@ class LiquipediaApiClient {
   private nextRequestAt = 0;
 
   public constructor(
-    private readonly cache: FileSystemCache,
+    @inject(CacheInterfaceToken)
+    private readonly cache: CacheInterface,
   ) {
   }
 

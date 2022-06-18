@@ -1,3 +1,5 @@
+export const CacheInterfaceToken = 'CacheInterface';
+
 interface CacheInterface {
   /**
    * @param {string} key

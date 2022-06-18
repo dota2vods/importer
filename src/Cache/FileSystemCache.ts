@@ -1,11 +1,14 @@
 import { createHash } from 'crypto';
 import { readFile, writeFile } from 'fs/promises';
 import { dirname, join } from 'path';
-import { singleton } from 'tsyringe';
+import { registry, singleton } from 'tsyringe';
 import mkdirp from 'mkdirp';
-import CacheInterface from './CacheInterface';
+import CacheInterface, { CacheInterfaceToken } from './CacheInterface';
 
 @singleton()
+@registry([
+  { token: CacheInterfaceToken, useClass: FileSystemCache },
+])
 class FileSystemCache implements CacheInterface {
   public async set(key: string, value: unknown, ttl?: number): Promise<void> {
     const filePath = this.getFilePathForKey(key);
