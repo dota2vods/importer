@@ -5,7 +5,7 @@ import {
   Tournament,
   TournamentUrlList,
   UpdateStatus,
-} from '../../types/ImporterInterface';
+} from '../ImporterInterface';
 import ImportError from '../../ImportError';
 import AbstractImporter from '../AbstractImporter';
 import LiquipediaApiClient from './LiquipediaApiClient';

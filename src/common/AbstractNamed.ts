@@ -1,4 +1,4 @@
-import Named from '../types/Named';
+import Named from './Named';
 
 abstract class AbstractNamed implements Named {
   protected abstract readonly nameSuffix: string;

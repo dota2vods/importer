@@ -1,7 +1,7 @@
 import { singleton } from 'tsyringe';
 import realFetch, { Response } from 'node-fetch';
 import sleep from 'sleep-promise';
-import { UpdateStatus } from '../../types/ImporterInterface';
+import { UpdateStatus } from '../ImporterInterface';
 import FileSystemCache from '../../cache/FileSystemCache';
 import ImportError from '../../ImportError';
 
@@ -217,6 +217,8 @@ class LiquipediaApiClient {
     // Liquipedia has a rate limit, make sure we don't hit it
     const timeToWait = this.nextRequestAt - Date.now();
     if (timeToWait > 0) {
+      console.log(`--- [fetch] Waiting ${timeToWait / 1000} seconds... ---`);
+
       await sleep(timeToWait);
     }
 

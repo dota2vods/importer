@@ -1,5 +1,5 @@
 import { OptionValues } from 'commander';
-import Named from './Named';
+import Named from '../common/Named';
 
 export interface Option {
   name: string;

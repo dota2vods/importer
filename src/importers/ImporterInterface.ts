@@ -1,4 +1,4 @@
-import Named from './Named';
+import Named from '../common/Named';
 
 export type UpdateStatus = (status: string) => void;
 

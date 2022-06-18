@@ -1,4 +1,4 @@
-import ImporterInterface, { UpdateStatus, Tournament, TournamentUrlList } from '../types/ImporterInterface';
+import ImporterInterface, { UpdateStatus, Tournament, TournamentUrlList } from './ImporterInterface';
 import AbstractNamed from '../common/AbstractNamed';
 
 abstract class AbstractImporter extends AbstractNamed implements ImporterInterface {

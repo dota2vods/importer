@@ -1,6 +1,6 @@
 import { OptionValues } from 'commander';
-import CommandInterface, { Option } from '../types/CommandInterface';
-import ImporterInterface from '../types/ImporterInterface';
+import ImporterInterface from '../importers/ImporterInterface';
+import CommandInterface, { Option } from './CommandInterface';
 import AbstractNamed from '../common/AbstractNamed';
 import ImportError from '../ImportError';
 
