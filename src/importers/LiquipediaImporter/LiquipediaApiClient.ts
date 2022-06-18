@@ -67,9 +67,12 @@ class LiquipediaApiClient {
     [Action.parse]: 35000,
   };
 
-  private lastRequestAction: Action = Action.query;
-
-  private lastRequest = 0;
+  /**
+   * The unix timestamp after which we can call the Liquipedia api again.
+   *
+   * Gets set based on the {@link minTimeBetweenRequests} values.
+   */
+  private nextRequestAt = 0;
 
   public constructor(
     private readonly cache: FileSystemCache,
@@ -211,17 +214,15 @@ class LiquipediaApiClient {
    * @see https://liquipedia.net/api-terms-of-use
    */
   private async fetch(url: string, action: Action = Action.query): Promise<Response> {
-    // Use normal min time if the last request was using query as action, else use the current action
-    // (Parse action requires a longer wait between requests)
-    const actionToUseForMinTime = this.lastRequestAction === Action.query ? Action.query : action;
-
     // Liquipedia has a rate limit, make sure we don't hit it
-    const timeToWait = this.minTimeBetweenRequests[actionToUseForMinTime] - (Date.now() - this.lastRequest);
+    const timeToWait = this.nextRequestAt - Date.now();
     if (timeToWait > 0) {
       await sleep(timeToWait);
     }
 
     // Do the fetch
+    // Note: We are using node-fetch which automatically sets the "Accept-Encoding: gzip" header required by the
+    //       Liquipedia API terms of use.
     const response = await realFetch(url, {
       headers: {
         // Use a custom user agent :)
@@ -229,9 +230,8 @@ class LiquipediaApiClient {
       },
     });
 
-    // Update last request time. We don't support parallel fetch calls.
-    this.lastRequestAction = action;
-    this.lastRequest = Date.now();
+    // Update next request time. We don't support parallel fetch calls.
+    this.nextRequestAt = Date.now() + this.minTimeBetweenRequests[action];
 
     // Return the fetch response
     return response;
