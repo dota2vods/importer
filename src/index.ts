@@ -3,7 +3,7 @@
 import 'reflect-metadata';
 import { container } from 'tsyringe';
 import { Command as Program } from 'commander';
-import CommandInterface, { CommandInterfaceToken } from './commands/CommandInterface';
+import CommandInterface, { CommandInterfaceToken } from './Command/CommandInterface';
 import DependencyInjectionAutoloader from './DependencyInjectionAutoloader';
 import ImportError from './ImportError';
 

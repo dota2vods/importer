@@ -1,6 +1,6 @@
 import { injectAll, registry, singleton } from 'tsyringe';
 import { OptionValues } from 'commander';
-import ImporterInterface, { ImporterInterfaceToken } from '../importers/ImporterInterface';
+import ImporterInterface, { ImporterInterfaceToken } from '../Importer/ImporterInterface';
 import { CommandInterfaceToken, Option } from './CommandInterface';
 import AbstractCommand, { ForceImporterOptions } from './AbstractCommand';
 

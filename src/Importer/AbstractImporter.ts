@@ -1,5 +1,5 @@
 import ImporterInterface, { UpdateStatus, Tournament, TournamentUrlList } from './ImporterInterface';
-import AbstractNamed from '../common/AbstractNamed';
+import AbstractNamed from '../Named/AbstractNamed';
 
 abstract class AbstractImporter extends AbstractNamed implements ImporterInterface {
   protected readonly nameSuffix = 'Importer';

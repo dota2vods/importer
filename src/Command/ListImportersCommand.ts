@@ -1,5 +1,5 @@
 import { injectAll, registry, singleton } from 'tsyringe';
-import ImporterInterface, { ImporterInterfaceToken } from '../importers/ImporterInterface';
+import ImporterInterface, { ImporterInterfaceToken } from '../Importer/ImporterInterface';
 import { CommandInterfaceToken } from './CommandInterface';
 import AbstractCommand from './AbstractCommand';
 

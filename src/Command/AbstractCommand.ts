@@ -1,7 +1,7 @@
 import { OptionValues } from 'commander';
-import ImporterInterface from '../importers/ImporterInterface';
+import ImporterInterface from '../Importer/ImporterInterface';
 import CommandInterface, { Option } from './CommandInterface';
-import AbstractNamed from '../common/AbstractNamed';
+import AbstractNamed from '../Named/AbstractNamed';
 import ImportError from '../ImportError';
 
 export interface ForceImporterOptions {
